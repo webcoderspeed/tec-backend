@@ -167,6 +167,10 @@ export const getUsers = asyncHandler(async (req, res) => {
         $regex: req.query.keyword,
         $options: 'gi',
       },
+      email: {
+        $regex: req.query.keyword,
+        $options: 'gi',
+      }
     }
     : {};
 

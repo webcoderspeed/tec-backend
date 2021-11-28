@@ -7,6 +7,7 @@ import connectDB from './config/db.js';
 import { notFound, errorHandler } from './middlewares/errorMiddleware.js';
 import userRoutes from './routes/userRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
+import postRoutes from './routes/postRoutes.js';
 import socialAuthRoutes from './routes/socialAuthRoutes.js'
 import cors from 'cors';
 import cookieSession from 'cookie-session';
@@ -54,7 +55,7 @@ app.use((req, res, next) => {
 app.use('/api/users', userRoutes);
 app.use('/api/uploads', uploadRoutes);
 app.use('/api/socialAuth', socialAuthRoutes);
-
+app.use('/api/posts', postRoutes);
 
 
 const __dirname = path.resolve();
