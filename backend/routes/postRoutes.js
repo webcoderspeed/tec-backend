@@ -8,14 +8,21 @@ router
   .post(protect, postController.createPost);
 
 router
+  .route('/user')
+  .get(protect, postController.getPostsByUser);
+
+router
   .route('/:id')
   .get(postController.getPost)
   .put(protect, postController.updatePost)
   .delete(protect, postController.deletePost);
 
+
+
 router
   .route('/:id/comment')
-  .post(protect, postController.commentOnPost);
+  .post(protect, postController.commentOnPost)
+  .get(protect, postController.getPostComment);
 
 router
   .route('/:id/comment/:commentId')

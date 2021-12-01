@@ -103,6 +103,9 @@ const postSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    category: {
+      type: String,
+    },
     comments: [commentSchema],
     likes: [likeSchema],
     dislikes: [dislikeSchema],

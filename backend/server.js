@@ -8,7 +8,8 @@ import { notFound, errorHandler } from './middlewares/errorMiddleware.js';
 import userRoutes from './routes/userRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
 import postRoutes from './routes/postRoutes.js';
-import socialAuthRoutes from './routes/socialAuthRoutes.js'
+import socialAuthRoutes from './routes/socialAuthRoutes.js';
+import musicRoutes from './routes/musicRoutes.js';
 import cors from 'cors';
 import cookieSession from 'cookie-session';
 import passport from 'passport';
@@ -56,6 +57,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/uploads', uploadRoutes);
 app.use('/api/socialAuth', socialAuthRoutes);
 app.use('/api/posts', postRoutes);
+app.use('/api/music', musicRoutes);
 
 
 const __dirname = path.resolve();

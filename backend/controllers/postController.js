@@ -22,7 +22,7 @@ export const getPosts = asyncHandler(async (req, res, next) => {
 
   const posts = await Post.find({
     ...keyword,
-  });
+  }).populate('userId');
 
   if (posts) {
     res.status(200).json({
@@ -59,13 +59,14 @@ export const getPost = asyncHandler(async (req, res, next) => {
   @access - Private
 */
 export const createPost = asyncHandler(async (req, res, next) => {
-  const { title, content, image } = req.body;
+  const { title, content, image, category } = req.body;
 
   const post = await Post.create({
     userId: req.user._id,
     title,
     content,
     image,
+    category
   });
 
   if (post) {
@@ -92,11 +93,12 @@ export const updatePost = asyncHandler(async (req, res, next) => {
       });
     }
 
-    const { title, content, image } = req.body;
+    const { title, content, image, category } = req.body;
 
     post.title = title ?? post.title;
     post.content = content ?? post.content;
     post.image = image ?? post.image;
+    post.category = category ?? post.category;
 
     await post.save();
 
@@ -138,16 +140,16 @@ export const deletePost = asyncHandler(async (req, res, next) => {
 
 /**
   @desc - Get all posts by user
-  @route - GET /api/posts/user/:id
+  @route - GET /api/posts/user
   @access - Private
 */
 export const getPostsByUser = asyncHandler(async (req, res, next) => {
   const posts = await Post.find({
-    userId: req.params.id,
-  });
+    userId: req.user?._id,
+  }).populate('userId');
 
   if (posts) {
-    res.status(200).json(posts);
+    res.status(200).json({ posts });
   } else {
     res.status(404).json({
       message: 'No posts found',
@@ -163,6 +165,7 @@ export const getPostsByUser = asyncHandler(async (req, res, next) => {
 export const commentOnPost = asyncHandler(async (req, res, next) => {
   const post = await Post.findById(req.params.id);
 
+
   if (post) {
     const { comment } = req.body;
 
@@ -176,9 +179,7 @@ export const commentOnPost = asyncHandler(async (req, res, next) => {
 
     await post.save();
 
-    res.status(201).json({
-      comment: post.comments,
-    });
+    res.status(201).json(post?.comments[post.comments.length - 1]);
   } else {
     res.status(404).json({
       message: 'No post found',
@@ -413,6 +414,30 @@ export const sharePost = asyncHandler(async (req, res, next) => {
 
     res.status(201).json({
       shareCount: post.shareCount,
+    });
+  } else {
+    res.status(404).json({
+      message: 'No post found',
+    });
+  }
+});
+
+/**
+ * @desc - get post comment
+ * @route - GET /api/posts/:id/comment
+ * @access - Private
+ */
+export const getPostComment = asyncHandler(async (req, res, next) => {
+  const post = await Post.findById(req.params.id).populate({
+    path: 'comments',
+    populate: {
+      path: 'userId',
+    },
+  });
+
+  if (post) {
+    res.status(200).json({
+      comments: post.comments,
     });
   } else {
     res.status(404).json({

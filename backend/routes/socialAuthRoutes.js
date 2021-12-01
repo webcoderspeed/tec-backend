@@ -46,8 +46,8 @@ router.get('/google/redirect', passportGoogle.authenticate('google', {
 
 
 // auth logout
-router.get('/logout', (req, res) => {
-  req.logOut();
+router.post('/logout', (req, res) => {
+  req.logout();
   res.status(200).clearCookie('express:sess.sig', {
     path: '/'
   });

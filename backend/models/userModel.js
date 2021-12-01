@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 
 const { ObjectId } = mongoose.Schema.Types;
 
@@ -16,6 +17,26 @@ const followingSchema = mongoose.Schema({
     type: ObjectId,
     ref: 'User',
     required: true,
+  },
+});
+
+const musicSchema = mongoose.Schema({
+  name: {
+    type: String,
+  },
+  musicId: {
+    type: ObjectId,
+    ref: 'Music',
+  },
+});
+
+const movieSchema = mongoose.Schema({
+  name: {
+    type: String,
+  },
+  movieId: {
+    type: ObjectId,
+    ref: 'Movie',
   },
 });
 
@@ -41,10 +62,14 @@ const userSchema = mongoose.Schema({
   },
   gender: {
     type: String,
-    enum: ['Maile', 'Female'],
+    enum: ['Male', 'Female'],
   },
-  location: {
+  bio: {
     type: String,
+  },
+  isActive: {
+    type: Boolean,
+    default: false,
   },
   followers: [followersSchema],
   followings: [followingSchema],
@@ -53,7 +78,9 @@ const userSchema = mongoose.Schema({
   isAdmin: {
     type: Boolean,
     default: false,
-  }
+  },
+  // musicPlaylist: [musicSchema],
+  // moviePlaylist: [movieSchema],
 }, {
   timestamps: true
 });

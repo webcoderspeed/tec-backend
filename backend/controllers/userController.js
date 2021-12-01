@@ -30,7 +30,11 @@ export const authUser = asyncHandler(async (req, res, next) => {
       isAdmin: user.isAdmin,
       token: generateToken(user._id),
       file: user.file,
-      phone: user.phone,
+      mobileNumber: user.mobileNumber,
+      location: user.location,
+      bio: user.bio,
+      gender: user.gender,
+      isActive: user.isActive,
       createdAt: user.createdAt,
       followers: user.followers,
       followings: user.followings,
@@ -71,9 +75,12 @@ export const registerUser = asyncHandler(async (req, res, next) => {
       name: user.name,
       email: user.email,
       isAdmin: user.isAdmin,
-      phone: user.phone,
+      mobileNumber: user.mobileNumber,
       token: generateToken(user._id),
       createdAt: user.createdAt,
+      bio: user.bio,
+      gender: user.gender,
+      isActive: user.isActive,
       file: user.file,
       followers: user.followers,
       followings: user.followings,
@@ -98,7 +105,10 @@ export const getUserProfile = asyncHandler(async (req, res) => {
       email: user.email,
       isAdmin: user.isAdmin,
       file: user.file,
-      phone: user.phone,
+      mobileNumber: user.mobileNumber,
+      bio: user.bio,
+      gender: user.gender,
+      isActive: user.isActive,
       followers: user.followers,
       followings: user.followings,
     });
@@ -108,12 +118,11 @@ export const getUserProfile = asyncHandler(async (req, res) => {
   }
 });
 
-
 /**
  * @desc update user profile
  * @route PUT /api/users/profile
  * @access PRIVATE [ LOGGED IN USER PROFILE ]
- * @body  { name, email, password, phone, file, isAdmin -> true | false }
+ * @body  { name, email, password, mobileNumber, file, isAdmin -> true | false }
  */
 export const updateUserProfile = asyncHandler(async (req, res, next) => {
   userValidators.validateUpdateUserProfile(req.body, next);
@@ -121,16 +130,14 @@ export const updateUserProfile = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.user._id);
 
   if (user) {
-    res.status(404);
-    throw new Error('User not found');
-  }
-
-  if (user) {
     user.name = req.body.name ?? user.name;
     user.email = req.body.email ?? user.email;
-    user.phone = req.body.phone ?? user.phone;
+    user.mobileNumber = req.body.mobileNumber ?? user.mobileNumber;
     user.file = req.body.file ?? user.file;
     user.isAdmin = req.body.isAdmin ?? user.isAdmin;
+    user.location = req.body.location ?? user.location;
+    user.bio = req.body.bio ?? user.bio;
+    user.gender = req.body.gender ?? user.gender
 
     if (req.body.password) {
       user.password = req.body.password;
@@ -144,8 +151,11 @@ export const updateUserProfile = asyncHandler(async (req, res, next) => {
       email: updatedUser.email,
       isAdmin: updatedUser.isAdmin,
       token: generateToken(updatedUser._id),
-      phone: updatedUser.phone,
+      mobileNumber: updatedUser.mobileNumber,
+      bio: updatedUser.bio,
+      gender: updatedUser.gender,
       file: updatedUser.file,
+      location: updatedUser.location,
       followers: updatedUser.followers,
       followings: updatedUser.followings,
     });
@@ -170,7 +180,7 @@ export const getUsers = asyncHandler(async (req, res) => {
       email: {
         $regex: req.query.keyword,
         $options: 'gi',
-      }
+      },
     }
     : {};
 
@@ -213,13 +223,12 @@ export const getUserById = asyncHandler(async (req, res) => {
   }
 });
 
-
 /**
  * @desc update user
  * @route PUT /api/users/:id
  * @access PRIVATE [ ADMIN ]
  * @param [id]
- * @body  { name, email, password, phone, file, role -> retailer | expert | admin }
+ * @body  { name, email, password, mobileNumber, file, bio, gender, isAdmin -> true | false }
  */
 export const updateUser = asyncHandler(async (req, res, next) => {
   userValidators.validateUpdateUser(req.body, next);
@@ -229,10 +238,13 @@ export const updateUser = asyncHandler(async (req, res, next) => {
   if (user) {
     user.name = req.body.name ?? user.name;
     user.email = req.body.email ?? user.email;
-    user.phone = req.body.phone ?? user.phone;
+    user.mobileNumber = req.body.mobileNumber ?? user.mobileNumber;
     user.file = req.body.file ?? user.file;
     user.password = req.body.password ?? user.password;
     user.isAdmin = req.body.isAdmin ?? user.isAdmin;
+    user.location = req.body.location ?? user.location;
+    user.bio = req.body.bio ?? user.bio;
+    user.gender = req.body.gender ?? user.gender
 
     const updatedUser = await user.save();
 
@@ -243,7 +255,10 @@ export const updateUser = asyncHandler(async (req, res, next) => {
         email: updatedUser.email,
         isAdmin: updatedUser.isAdmin,
         token: generateToken(updatedUser._id),
-        phone: updatedUser.phone,
+        mobileNumber: updatedUser.mobileNumber,
+        gender: updatedUser.gender,
+        bio: updatedUser.bio,
+        location: updatedUser.location,
         file: updatedUser.file,
         followers: updatedUser.followers,
         followings: updatedUser.followings,
@@ -255,17 +270,16 @@ export const updateUser = asyncHandler(async (req, res, next) => {
   }
 });
 
-
 /**
  * @desc add a new user
  * @route POST /api/users/add
  * @access PRIVATE [ ADMIN ]
- * @body  { name, email, password, phone, file, isAdmin -> true | false }
+ * @body  { name, email, password, mobileNumber, file, isAdmin -> true | false }
  */
 export const addUser = asyncHandler(async (req, res, next) => {
   userValidators.validateAddUser(req.body, next);
 
-  const { name, email, password, isAdmin, file, phone } = req.body;
+  const { name, email, password, isAdmin, file, mobileNumber } = req.body;
 
   const userExists = await User.findOne({ email });
 
@@ -286,7 +300,9 @@ export const addUser = asyncHandler(async (req, res, next) => {
     password,
     isAdmin,
     file,
-    phone,
+    mobileNumber,
+    gender,
+    bio
   });
 
   if (user) {
@@ -295,10 +311,13 @@ export const addUser = asyncHandler(async (req, res, next) => {
       name: user.name,
       email: user.email,
       isAdmin: user.isAdmin,
-      phone: user.phone,
+      mobileNumber: user.mobileNumber,
       token: generateToken(user._id),
+      bio: user.bio,
+      gender: user.gender,
       createdAt: user.createdAt,
       file: user.file,
+      location: user.location,
       followers: user.followers,
       followings: user.followings,
     });
@@ -321,6 +340,12 @@ export const followUser = asyncHandler(async (req, res, next) => {
 
   try {
     const userToFollow = await User.findById(userId);
+
+    // if userTOFollow is equal to req.user._id throw error you cannnot follow yourself
+    if (userToFollow._id.toString() === req.user._id.toString()) {
+      res.status(400);
+      throw new Error('You cannot follow yourself');
+    }
 
     if (!userToFollow) throw new Error('User does not exists');
 
@@ -347,7 +372,6 @@ export const followUser = asyncHandler(async (req, res, next) => {
                 },
               },
             },
-            { new: true }
           );
         }
       }
@@ -358,7 +382,6 @@ export const followUser = asyncHandler(async (req, res, next) => {
     res.status(400);
     throw new Error(err);
   }
-
 });
 
 /**
@@ -400,11 +423,15 @@ export const unFollowUser = asyncHandler(async (req, res, next) => {
                 },
               },
             },
-            { new: true }
           );
         }
       }
     );
+
+    console.log({
+      currentUser,
+      userToUnFollow
+    })
 
     res.status(200).json(currentUser);
   } catch (err) {
@@ -471,7 +498,6 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
     .update(req.params.token)
     .digest('hex');
 
-
   const user = await User.findOne({
     passwordResetToken: hashedToken,
     passwordResetExpires: {
@@ -482,7 +508,7 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
   // if token is not expired, and there is a user, set the new password
   if (!user) {
     res.status(400);
-    throw new Error("Token is invalid or has expired");
+    throw new Error('Token is invalid or has expired');
   }
 
   const password = req.body.password;
@@ -494,8 +520,8 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
     user.passwordResetExpires = undefined;
     await user.save();
   } else {
-    res.status(400)
-    throw new Error("Password didn't match")
+    res.status(400);
+    throw new Error("Password didn't match");
   }
 
   // Update the user in, send JWT
@@ -507,10 +533,12 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
     isAdmin: user.isAdmin,
     token: generateToken(user._id),
     file: user.file,
-    phone: user.phone,
+    gender: user.gender,
+    bio: user.bio,
+    mobileNumber: user.mobileNumber,
+    location: user.location,
     createdAt: user.createdAt,
     followers: user.followers,
     followings: user.followings,
   });
-
 });

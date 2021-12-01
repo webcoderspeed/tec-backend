@@ -29,10 +29,12 @@ export const validateUpdateUserProfile = (body, next) => {
   const updateUserProfileSchema = Joi.object({
     name: Joi.string().min(3).max(30).optional(),
     email: Joi.string().email().optional(),
-    phone: Joi.string().length(10).pattern(/^[0-9]+$/).optional(),
+    mobileNumber: Joi.string().length(10).pattern(/^[0-9]+$/).optional(),
     file: Joi.string().optional(),
     password: Joi.string().min(6).pattern(/^[a-zA-Z0-9]{3,30}$/).optional(),
     isAdmin: Joi.string().max(10).optional(),
+    gender: Joi.string().optional(),
+    bio: Joi.string().optional()
   });
 
   const { error } = updateUserProfileSchema.validate(body);
@@ -44,10 +46,13 @@ export const validateUpdateUser = (body, next) => {
   const updateUserSchema = Joi.object({
     name: Joi.string().min(3).max(30).optional(),
     email: Joi.string().email().optional(),
-    phone: Joi.string().length(10).pattern(/^[0-9]+$/).optional(),
+    mobileNumber: Joi.string().length(10).pattern(/^[0-9]+$/).optional(),
     file: Joi.string().optional(),
     password: Joi.string().min(6).pattern(/^[a-zA-Z0-9]{3,30}$/).optional(),
-    isAdmin: Joi.string().optional()
+    isAdmin: Joi.string().optional(),
+    gender: Joi.string().optional(),
+    bio: Joi.string().optional(),
+    location: Joi.string().optional()
   });
 
   const { error } = updateUserSchema.validate(body);
@@ -59,10 +64,12 @@ export const validateAddUser = (body, next) => {
   const addUserSchema = Joi.object({
     name: Joi.string().min(3).max(30).required(),
     email: Joi.string().email().required(),
-    phone: Joi.string().length(10).pattern(/^[0-9]+$/).required(),
+    mobileNumber: Joi.string().length(10).pattern(/^[0-9]+$/).required(),
     file: Joi.string().required(),
     password: Joi.string().min(6).pattern(/^[a-zA-Z0-9]{3,30}$/).required(),
-    isAdmin: Joi.string().required()
+    isAdmin: Joi.boolean().optional(),
+    gender: Joi.string().required(),
+    bio: Joi.string().optional()
   });
 
   const { error } = addUserSchema.validate(body);

@@ -5,15 +5,18 @@ const sendEmail = async ({
   subject,
   message
 }) => {
+
   // create a transporter
   const transporter = nodemailer.createTransport({
-    host: "smtp.zoho.in",
-    port: 465,
-    secure: true,
+    host: process.env.NODEMAILER_HOST,
+    secureConnection: false,
+    port: process.env.NODEMAILER_PORT,
+    requiresAuth: true,
+    domains: ["gmail.com", "googlemail.com"],
     auth: {
       user: process.env.NODEMAILER_EMAIL,
       pass: process.env.NODEMAILER_PASSWORD,
-    },
+    }
   });
 
   // define the email options
@@ -32,7 +35,7 @@ const sendEmail = async ({
   }
 
   // sending the email
-  await transporter.sendMail(mailOptions)
+  await transporter.sendMail(mailOptions);
 }
 
 export default sendEmail;
